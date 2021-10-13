@@ -2,7 +2,7 @@ const http = require('http');
 const bcrypt = require('bcrypt');
 require('dotenv').config();
 
-const utils = require('./src/utils/nodemailer');
+const SendEmail = require('./src/services/sendEmailService');
 
 const DEFAULT_USER = { username: 'Teste', password: 'HelloWorld' };
 
@@ -33,16 +33,16 @@ const routes = {
             const datas = JSON.parse(data);
 
             if (datas.recipient.length > 0  && datas.subject.length > 0 && datas.message.length > 0) {
+                const sendEmail = new SendEmail(datas.recipient, datas.subject, datas.message);
+                
                 try {
-                    await utils(
-                        datas.recipient, datas.subject, datas.message
-                    );
+                   await sendEmail.sendEmail();
 
-                    response.writeHeader(200);
-                    response.end();
+                   response.writeHeader(200);
+                   response.end();
                 } catch (error) {
-                    response.writeHeader(500);
-                    response.end();
+                   response.writeHeader(500);
+                   response.end();
                 }
             } 
 
